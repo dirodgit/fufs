@@ -11,6 +11,7 @@
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -136,6 +137,10 @@
                 <button onclick="switchTab('compendium')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl transition-all glass-hover text-slate-400 hover:text-white group">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.168.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                     <span class="hidden md:block font-medium">Compêndio</span>
+                </button>
+                <button onclick="switchTab('multiplayer')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl transition-all glass-hover text-slate-400 hover:text-white group border-t border-white/5 pt-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    <span class="hidden md:block font-medium">Mesa Online</span>
                 </button>
             </div>
 
@@ -319,6 +324,69 @@
                     </div>
                 </div>
             </div>
+
+            <div id="tab-multiplayer" class="tab-content hidden">
+                <header class="mb-10">
+                    <h2 class="font-outfit text-4xl text-white mb-2">Mesa Online (VTT)</h2>
+                    <p class="text-slate-400">Conecte-se com seu mestre e amigos em tempo real.</p>
+                </header>
+
+                <div id="multiplayer-setup" class="max-w-xl mx-auto py-10">
+                    <div class="glass p-10 rounded-[40px] text-center space-y-8">
+                        <div class="w-20 h-20 bg-violet-500/20 rounded-3xl flex items-center justify-center mx-auto text-violet-400">
+                             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        </div>
+                        <h3 class="text-2xl font-outfit text-white">Pronto para a Aventura?</h3>
+                        
+                        <div class="space-y-4">
+                            <input id="room-code-input" type="text" placeholder="Código da Sala (ex: DRAGON)" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-violet-500 focus:outline-none text-center font-bold tracking-widest text-xl transition-all">
+                            <input id="player-name-input" type="text" placeholder="Seu Nome de Herói" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-violet-500 focus:outline-none text-center transition-all">
+                        </div>
+
+                        <div class="flex gap-4">
+                            <button onclick="onJoinRoom()" class="flex-1 bg-violet-500 hover:bg-violet-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-violet-500/20 transition-all">Entrar na Sala</button>
+                            <button onclick="onCreateRoom()" class="flex-1 glass border-white/10 hover:bg-white/5 text-white font-bold py-4 rounded-2xl transition-all">Criar Mesa (Mestre)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="multiplayer-active" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <!-- Sidebar: Room Info & Players -->
+                    <aside class="lg:col-span-1 space-y-6">
+                        <div class="glass p-6 rounded-3xl">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-outfit text-lg text-white">Sua Mesa</h3>
+                                <span id="active-room-code" class="px-3 py-1 bg-violet-500/20 text-violet-400 rounded-lg font-mono text-sm font-bold">----</span>
+                            </div>
+                            <div id="room-player-list" class="space-y-3">
+                                <!-- Players list -->
+                            </div>
+                            <button onclick="leaveRoom()" class="w-full mt-6 py-2 text-xs font-bold text-slate-500 hover:text-rose-400 transition-colors uppercase tracking-widest">Sair da Mesa</button>
+                        </div>
+                    </aside>
+
+                    <!-- Main Area: Chat & Handouts -->
+                    <div class="lg:col-span-3 flex flex-col h-[600px] glass rounded-[40px] overflow-hidden">
+                        <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4">
+                            <!-- Messages -->
+                        </div>
+                        
+                        <!-- Chat Input -->
+                        <div class="p-4 bg-black/20 border-t border-white/5 flex gap-4 items-end">
+                            <button onclick="triggerImageUpload()" class="p-4 glass rounded-2xl text-slate-400 hover:text-white transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </button>
+                            <div class="flex-1 relative">
+                                <textarea id="chat-textarea" placeholder="Envie uma mensagem ou role dados..." class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-violet-500 focus:outline-none resize-none transition-all" rows="1"></textarea>
+                            </div>
+                            <button onclick="sendMessage()" class="p-4 bg-violet-500 rounded-2xl text-white shadow-lg shadow-violet-500/20 hover:scale-105 active:scale-95 transition-all">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                            </button>
+                        </div>
+                        <input type="file" id="image-upload-input" class="hidden" accept="image/*" onchange="handleImageUpload(this)">
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -337,7 +405,14 @@
             journeyIndex: parseInt(localStorage.getItem('fufs_journey') || '0'),
             combat: JSON.parse(localStorage.getItem('fufs_combat') || '{ "active": false, "participants": [], "logs": [] }'),
             activeCharacter: null,
-            currentSheet: null
+            currentSheet: null,
+            
+            // Supabase State
+            supabase: null,
+            online: false,
+            room: null,
+            player: { name: localStorage.getItem('fufs_player_name') || '' },
+            messages: []
         };
 
         const ORACLE_MAP = {
@@ -585,6 +660,22 @@
             
             localStorage.setItem('fufs_combat', JSON.stringify(state.combat));
             renderCombatActors();
+
+            // Sync with Supabase
+            if (state.online) syncCombatState();
+        }
+
+        async function syncCombatState() {
+            if (!state.room) return;
+            const { error } = await state.supabase
+                .from('rooms')
+                .update({ 
+                    combat_active: state.combat.active,
+                    current_actor_id: state.combat.currentActor !== null ? state.combat.currentActor.toString() : null
+                })
+                .eq('id', state.room.id);
+            
+            if (error) console.error("Erro ao sincronizar combate:", error);
         }
 
         function addCombatLog(msg) {
@@ -667,6 +758,8 @@
             renderCombatActors();
             renderCharacterList();
             localStorage.setItem('fufs_combat', JSON.stringify(state.combat));
+
+            if (state.online) syncCombatState();
         }
 
         function openEnemyCreator() {
@@ -1133,9 +1226,282 @@
             }
         }
 
-        // Initialize
-        switchTab('dashboard');
-        renderJourney();
+        // --- Supabase & Online Logic ---
+
+        const SB_URL = "https://mmveikspwlmmreylkfkq.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tdmVpa3Nwd2xtbXJleWxrZmtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwOTMxMjAsImV4cCI6MjA5MTY2OTEyMH0.KgCqmEBI-WPaVGrhCKVvrpWFVXovEXVqrEWoGhNuq2k";
+
+        function initSupabase() {
+            try {
+                state.supabase = supabase.createClient(SB_URL, SB_KEY);
+                console.log("Supabase inicializado.");
+                
+                // Load saved player name
+                const savedName = localStorage.getItem('fufs_player_name');
+                if (savedName) {
+                    state.player.name = savedName;
+                    document.getElementById('player-name-input').value = savedName;
+                }
+            } catch (e) {
+                console.error("Erro ao iniciar Supabase:", e);
+            }
+        }
+
+        async function onCreateRoom() {
+            const code = document.getElementById('room-code-input').value.toUpperCase().trim();
+            const playerName = document.getElementById('player-name-input').value.trim();
+            
+            if (!code || !playerName) return alert("Preencha o código da sala e seu nome!");
+            
+            state.player.name = playerName;
+            localStorage.setItem('fufs_player_name', playerName);
+
+            const { data, error } = await state.supabase
+                .from('rooms')
+                .insert([{ code, gm_id: 'guest-gm-' + Date.now(), name: code }])
+                .select()
+                .single();
+
+            if (error) {
+                if (error.code === '23505') return alert("Esta sala já existe! Tente outro código ou entre nela.");
+                return alert("Erro ao criar sala: " + error.message);
+            }
+
+            enterRoom(data);
+        }
+
+        async function onJoinRoom() {
+            const code = document.getElementById('room-code-input').value.toUpperCase().trim();
+            const playerName = document.getElementById('player-name-input').value.trim();
+            
+            if (!code || !playerName) return alert("Preencha o código da sala e seu nome!");
+            
+            state.player.name = playerName;
+            localStorage.setItem('fufs_player_name', playerName);
+
+            const { data, error } = await state.supabase
+                .from('rooms')
+                .select('*')
+                .eq('code', code)
+                .single();
+
+            if (error || !data) return alert("Sala não encontrada!");
+
+            enterRoom(data);
+        }
+
+        function enterRoom(roomData) {
+            state.room = roomData;
+            state.online = true;
+            
+            document.getElementById('multiplayer-setup').classList.add('hidden');
+            document.getElementById('multiplayer-active').classList.remove('hidden');
+            document.getElementById('active-room-code').innerText = roomData.code;
+            
+            subscribeToRoom(roomData.id);
+            loadMessages(roomData.id);
+            
+            addSystemMessage(`Você entrou na sala ${roomData.code} como ${state.player.name}`);
+        }
+
+        function leaveRoom() {
+            state.online = false;
+            state.room = null;
+            document.getElementById('multiplayer-setup').classList.remove('hidden');
+            document.getElementById('multiplayer-active').classList.add('hidden');
+            // Unsubscribe logic would go here
+        }
+
+        function subscribeToRoom(roomId) {
+            // Subscribe to Messages
+            state.supabase
+                .channel(`room-msg-${roomId}`)
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` }, payload => {
+                    handleNewMessage(payload.new);
+                })
+                .subscribe();
+
+            // Subscribe to Room State (Combat)
+            state.supabase
+                .channel(`room-state-${roomId}`)
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` }, payload => {
+                    handleRoomUpdate(payload.new);
+                })
+                .subscribe();
+        }
+
+        function handleRoomUpdate(updatedRoom) {
+            state.room = updatedRoom;
+            
+            // Sync Combat UI
+            if (updatedRoom.combat_active !== state.combat.active) {
+                state.combat.active = updatedRoom.combat_active;
+                if (state.combat.active) {
+                    state.combat.participants = state.characters.map((c, i) => ({ id: 'pc-' + i, name: c.name, type: 'pc', charIndex: i }));
+                } else {
+                    state.combat.participants = [];
+                    state.combat.currentActor = null;
+                }
+                updateCombatUI();
+            }
+
+            if (updatedRoom.current_actor_id !== null) {
+                const actorIdx = parseInt(updatedRoom.current_actor_id);
+                if (state.combat.currentActor !== actorIdx) {
+                    state.combat.currentActor = actorIdx;
+                    updateCombatUI();
+                }
+            }
+        }
+
+        function updateCombatUI() {
+            const btn = document.getElementById('combat-toggle-btn');
+            if (state.combat.active) {
+                btn.innerText = "Encerrar Combate";
+                btn.classList.replace('bg-violet-500', 'bg-rose-600');
+            } else {
+                btn.innerText = "Iniciar Combate";
+                btn.classList.replace('bg-rose-600', 'bg-violet-500');
+            }
+            renderCombatActors();
+        }
+
+        async function loadMessages(roomId) {
+            const { data, error } = await state.supabase
+                .from('messages')
+                .select('*')
+                .eq('room_id', roomId)
+                .order('created_at', { ascending: true })
+                .limit(50);
+
+            if (data) {
+                state.messages = data;
+                renderMessages();
+            }
+        }
+
+        function handleNewMessage(msg) {
+            state.messages.push(msg);
+            renderMessages();
+        }
+
+        async function sendMessage() {
+            const textarea = document.getElementById('chat-textarea');
+            const content = textarea.value.trim();
+            if (!content || !state.online) return;
+
+            textarea.value = '';
+            
+            await pushMessage({
+                room_id: state.room.id,
+                sender_name: state.player.name,
+                content: content,
+                type: 'text'
+            });
+        }
+
+        async function pushMessage(msgData) {
+            const { error } = await state.supabase
+                .from('messages')
+                .insert([msgData]);
+
+            if (error) console.error("Erro ao enviar:", error);
+        }
+
+        function triggerImageUpload() {
+            document.getElementById('image-upload-input').click();
+        }
+
+        async function handleImageUpload(input) {
+            const file = input.files[0];
+            if (!file || !state.online) return;
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `${state.room.code}/${fileName}`;
+
+            addSystemMessage("Enviando imagem...");
+
+            const { data, error } = await state.supabase.storage
+                .from('handouts')
+                .upload(filePath, file);
+
+            if (error) {
+                console.error("Erro no upload:", error);
+                return alert("Erro ao enviar imagem. Verifique se o bucket 'handouts' existe no Supabase e está público.");
+            }
+
+            const { data: { publicUrl } } = state.supabase.storage
+                .from('handouts')
+                .getPublicUrl(filePath);
+
+            await pushMessage({
+                room_id: state.room.id,
+                sender_name: state.player.name,
+                content: publicUrl,
+                type: 'image'
+            });
+            
+            input.value = '';
+        }
+
+        function addSystemMessage(text) {
+            const msg = {
+                id: Date.now(),
+                sender_name: 'SISTEMA',
+                content: text,
+                type: 'system',
+                created_at: new Date().toISOString()
+            };
+            state.messages.push(msg);
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            
+            state.messages.forEach(msg => {
+                const isSystem = msg.type === 'system';
+                const isMe = msg.sender_name === state.player.name;
+                
+                const msgEl = document.createElement('div');
+                msgEl.className = `flex flex-col ${isSystem ? 'items-center' : isMe ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`;
+                
+                if (isSystem) {
+                    msgEl.innerHTML = `<span class="px-4 py-1 bg-white/5 rounded-full text-[10px] text-slate-500 uppercase font-bold tracking-widest">${msg.content}</span>`;
+                } else {
+                    const isImage = msg.type === 'image';
+                    msgEl.innerHTML = `
+                        <div class="max-w-[80%] ${isMe ? 'bg-violet-600/20 border border-violet-500/30' : 'glass'} p-4 rounded-2xl relative group">
+                            <span class="text-[10px] font-bold ${isMe ? 'text-violet-400' : 'text-slate-400'} uppercase mb-1 block">${msg.sender_name}</span>
+                            ${isImage 
+                                ? `<img src="${msg.content}" class="rounded-xl w-full max-h-96 object-contain cursor-pointer" onclick="window.open(this.src)">`
+                                : `<div class="text-white text-sm whitespace-pre-wrap">${msg.content}</div>`
+                            }
+                            <span class="text-[8px] text-slate-600 mt-2 block">${new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                    `;
+                }
+                container.appendChild(msgEl);
+            });
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Trigger on enter
+        document.getElementById('chat-textarea')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Initialize App
+        window.onload = () => {
+            renderJourney();
+            initSupabase();
+        };
     </script>
 </body>
 </html>
