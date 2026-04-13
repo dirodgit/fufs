@@ -1,0 +1,15 @@
+# Segurança
+.security/
+
+# Foundry VTT
+.security/
+.exemplos/
+.agents/
+.claude/
+.compendium/
+skills/
+skills-lock.json
+node_modules/
+dist/
+*.log
+.DS_Store
