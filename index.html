@@ -12,6 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -1228,8 +1229,8 @@
 
         // --- Supabase & Online Logic ---
 
-        const SB_URL = "https://mmveikspwlmmreylkfkq.supabase.co";
-        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tdmVpa3Nwd2xtbXJleWxrZmtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwOTMxMjAsImV4cCI6MjA5MTY2OTEyMH0.KgCqmEBI-WPaVGrhCKVvrpWFVXovEXVqrEWoGhNuq2k";
+        const SB_URL = window.ENV?.SB_URL || "";
+        const SB_KEY = window.ENV?.SB_KEY || "";
 
         function initSupabase() {
             try {
