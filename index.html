@@ -1160,7 +1160,12 @@
             `;
             modal.classList.remove('hidden');
         }
+        async function processImport() {
+            const raw = document.getElementById('import-code').value.trim();
+            if (!raw) return alert("Cole o código!");
 
+            try {
+                const char = JSON.parse(raw);
                 
                 // Minimal validation
                 if (!char.name || !char.concept) throw new Error();
@@ -1233,6 +1238,10 @@
         const SB_KEY = window.ENV?.SB_KEY || "";
 
         function initSupabase() {
+            if (!SB_URL || !SB_KEY) {
+                console.warn("Supabase URL/Key não encontradas. O modo online estará desativado.");
+                return;
+            }
             try {
                 state.supabase = supabase.createClient(SB_URL, SB_KEY);
                 console.log("Supabase inicializado.");
