@@ -661,7 +661,9 @@
         function handleCombatFailure() {
             if (state.combat.active && state.combat.currentActor !== null) {
                 const char = state.characters[state.combat.currentActor];
-                char.stress = Math.min((char.stress || 0) + 1, 4);
+                const limit = char.stressLimit || 4;
+                char.stress = Math.min((char.stress || 0) + 1, limit);
+                if (char.stress >= limit) char.vulnerable = true;
                 localStorage.setItem('fufs_chars', JSON.stringify(state.characters));
                 renderCharacterList();
                 addCombatLog(`<span class="text-rose-400 font-bold"> FALHA!</span> ${char.name} sofre 1 de Estresse e perde a iniciativa.`);
@@ -705,7 +707,8 @@
 
         async function updateCombatStress(actorIndex, delta) {
             const actor = state.combat.participants[actorIndex];
-            const newStress = Math.max(0, Math.min(4, (actor.stress || 0) + delta));
+            const limit = actor.stressLimit || 4;
+            const newStress = Math.max(0, Math.min(limit, (actor.stress || 0) + delta));
             
             // Apply to combat state
             actor.stress = newStress;
@@ -774,7 +777,7 @@
                             <div>
                                 <h4 class="font-outfit text-white">${char.name}</h4>
                                 <div class="flex gap-1 mt-1">
-                                    ${Array(4).fill(0).map((_, i) => `<div class="w-2.5 h-1.5 rounded-full ${i < char.stress ? 'bg-rose-500' : 'bg-white/10'}"></div>`).join('')}
+                                    ${Array(char.stressLimit || 4).fill(0).map((_, i) => `<div class="w-2.5 h-1.5 rounded-full ${i < char.stress ? 'bg-rose-500' : 'bg-white/10'}"></div>`).join('')}
                                 </div>
                             </div>
                         </div>
@@ -935,11 +938,11 @@
                         </div>
                         
                         <div class="glass p-6 rounded-3xl">
-                            <label class="text-[10px] font-bold text-rose-500 uppercase tracking-widest block mb-4">Estresse (${char.stress || 0}/4)</label>
-                            <div class="grid grid-cols-4 gap-2">
-                                ${Array(4).fill(0).map((_, i) => `<div class="h-3 rounded-full ${i < (char.stress || 0) ? 'bg-rose-500' : 'bg-white/10'}"></div>`).join('')}
+                            <label class="text-[10px] font-bold text-rose-500 uppercase tracking-widest block mb-4">Estresse</label>
+                            <div class="grid grid-cols-${Math.min(char.stressLimit || 4, 10)} gap-2">
+                                ${Array(char.stressLimit || 4).fill(0).map((_, i) => `<div class="h-3 rounded-full ${i < (char.stress || 0) ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'bg-white/10'}"></div>`).join('')}
                             </div>
-                            <p class="text-slate-400 text-xs mt-4">Se chegar a 4 e sofrer mais um, você fica <span class="text-rose-400 font-bold italic">Vulnerável</span> (Desvantagem em todas as jogadas).</p>
+                            <p class="text-slate-400 text-xs mt-4">Se atingir ${char.stressLimit || 4} e sofrer mais um, você fica <span class="text-rose-400 font-bold italic">Vulnerável</span>.</p>
                         </div>
                     </div>
 
@@ -963,7 +966,8 @@
             const char = state.characters[index];
             const printWin = window.open('', '_blank');
             
-            const stressHTML = Array(4).fill(0).map((_, i) => 
+            const stressLimit = char.stressLimit || 4;
+            const stressHTML = Array(stressLimit).fill(0).map((_, i) => 
                 `<div style="width: 25px; height: 25px; border: 2px solid #000; border-radius: 5px; ${i < (char.stress || 0) ? 'background: #000;' : ''}"></div>`
             ).join('');
 
@@ -1023,7 +1027,7 @@
                         
                         <div>
                             <div class="section">
-                                <h2>Estresse (${char.stress || 0}/4)</h2>
+                                <h2>Estresse e Condições</h2>
                                 <div class="stress-grid">${stressHTML}</div>
                                 <p style="font-size: 10px; color: #666; margin-top: 5px;">Se atingir o limite e sofrer mais estresse, você fica <strong>Vulnerável</strong> (Desvantagem nas jogadas).</p>
                             </div>
@@ -1079,7 +1083,7 @@
                         <div class="w-12 h-12 bg-violet-500/20 rounded-2xl flex items-center justify-center text-violet-400 font-outfit text-xl">
                             ${char.name[0]}
                         </div>
-                        <div class="px-3 py-1 bg-violet-500/10 rounded-full text-[10px] font-bold text-violet-500 uppercase tracking-tighter">Estresse: ${char.stress || 0}/4</div>
+                        <div class="px-3 py-1 bg-violet-500/10 rounded-full text-[10px] font-bold text-violet-500 uppercase tracking-tighter">Máximo: ${char.stressLimit || 4}</div>
                     </div>
                     <h4 class="font-outfit text-xl text-white mb-1">${char.name}</h4>
                     <p class="text-sm text-slate-400 line-clamp-1">${char.concept}</p>
@@ -1111,9 +1115,15 @@
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Conceito Único</label>
                                 <textarea id="edit-char-concept" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-violet-500 focus:outline-none transition-all h-24 whitespace-pre-wrap">${char.concept}</textarea>
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Estresse Inicial (0-4)</label>
-                                <input id="edit-char-stress" type="number" min="0" max="4" value="${char.stress || 0}" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-violet-500 focus:outline-none transition-all">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Estresse Atual</label>
+                                    <input id="edit-char-stress" type="number" min="0" max="${char.stressLimit || 4}" value="${char.stress || 0}" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-violet-500 focus:outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Limite Total (Lvl UP/Itens)</label>
+                                    <input id="edit-char-limit" type="number" min="1" max="20" value="${char.stressLimit || 4}" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:border-violet-500 focus:outline-none transition-all">
+                                </div>
                             </div>
                         </div>
 
@@ -1359,6 +1369,7 @@
                 concept: document.getElementById('edit-char-concept').value,
                 problem: document.getElementById('edit-char-problem').value,
                 stress: parseInt(document.getElementById('edit-char-stress').value) || 0,
+                stressLimit: parseInt(document.getElementById('edit-char-limit').value) || 4,
                 markers: [...tempMarkers],
                 image: state.tempAvatar
             };
