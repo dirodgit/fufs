@@ -1,14 +1,11 @@
 # Direitos Autorais
 
-O **FUFS (Fast Universal Fun System)** é um sistema de RPG de licença aberta escrito por **Diogo Rodrigues "Verskald"**.
+[FUFS - Ficção Universal de Fim de Semana](https://fufsrpg.diogolabs.dev.br/) © 2026 by [Diogo Rodrigues "Verskáld"](https://diogolabs.dev.br) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
-Este trabalho está licenciado sob a Licença **Creative Commons Atribuição 4.0 Internacional (CC-BY 4.0)**.
-
-Para visualizar uma cópia desta licença, visite:
-[http://creativecommons.org/licenses/by/4.0/](http://creativecommons.org/licenses/by/4.0/)
+![CC](https://mirrors.creativecommons.org/presskit/icons/cc.svg) ![BY](https://mirrors.creativecommons.org/presskit/icons/by.svg)
 
 ---
-**Autoria:** Diogo Rodrigues "Verskald"  
+**Autoria:** Diogo Rodrigues "Verskáld"  
 **Licença:** CC-BY 4.0
 
 ### Sobre a Licença
