@@ -33,9 +33,17 @@
         }
     </script>
     <style>
-        body {
+        html, body { 
+            overflow-x: hidden;
+            width: 100%;
+            min-height: 100vh;
             background: #020617;
-            overflow: hidden;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
         }
         .mesh-bg {
             position: fixed;
@@ -107,7 +115,7 @@
 
     <!-- App Header & Navigation -->
     <header class="glass border-b border-white/10 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex flex-wrap items-center justify-center sm:justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
                     <span class="font-outfit text-xl text-white">F</span>
@@ -115,7 +123,7 @@
                 <h1 class="font-outfit text-xl tracking-tight text-white/90">FUFS <span class="text-violet-500">Companion</span></h1>
             </div>
             
-            <nav class="flex items-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/10">
+            <nav class="flex flex-wrap items-center justify-center gap-1 bg-white/5 p-1 rounded-2xl border border-white/10">
                 <button onclick="switchTab('dashboard')" class="nav-btn px-4 py-2 rounded-xl transition-all hover:bg-white/5 text-sm font-medium text-slate-400 hover:text-white flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                     Dashboard
@@ -211,7 +219,7 @@
                     </button>
                 </div>
 
-                <div id="character-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="character-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Dynamic List -->
                 </div>
             </div>
@@ -222,7 +230,7 @@
                     <p class="text-slate-400 italic leading-relaxed">Sistema FUFS criado por Diogo Rodrigues "Verskáld".<br>As regras oficiais sempre ao seu lado.</p>
                 </header>
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    <aside id="compendium-nav" class="lg:col-span-1 glass p-4 rounded-2xl h-fit sticky top-0 space-y-1">
+                    <aside id="compendium-nav" class="lg:col-span-1 glass p-4 rounded-2xl h-fit static lg:sticky top-0 space-y-1">
                         <!-- Chapter links injected here -->
                     </aside>
                     <article id="compendium-viewer" class="lg:col-span-3 glass p-8 rounded-3xl prose prose-invert prose-violet max-w-none">
@@ -238,7 +246,7 @@
                     <h2 class="font-outfit text-4xl text-white mb-2">Oráculo Solo</h2>
                     <p class="text-slate-400">Ferramentas de geração randômica para suas aventuras independentes.</p>
                 </header>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <button onclick="generateSolo('mission')" class="glass p-8 rounded-3xl text-left glass-hover transition-all group">
                          <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mb-4 text-blue-400 group-hover:scale-110 transition-transform">
                              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
@@ -298,17 +306,17 @@
                     </div>
                 </header>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="flex flex-col lg:flex-row gap-8">
                     <!-- Tracker Area -->
-                    <div class="lg:col-span-2 space-y-6">
-                        <div id="combat-actors" class="space-y-4">
+                    <div class="flex-1 space-y-6 order-2 lg:order-1">
+                        <div id="combat-actors" class="space-y-4 max-h-[600px] overflow-y-auto pr-2">
                            <!-- Dynamic Actors -->
                            <div class="text-center py-20 text-slate-500 italic">Nenhum combate ativo. Selecione heróis e adicione inimigos para começar.</div>
                         </div>
                     </div>
 
                     <!-- Right Panel: Log & Status -->
-                    <div class="space-y-6">
+                    <div class="w-full lg:w-80 space-y-6 order-1 lg:order-2">
                         <div class="glass p-6 rounded-3xl">
                             <h3 class="font-outfit text-xl text-white mb-4">Relatório de Batalha</h3>
                              
@@ -360,7 +368,7 @@
     </div>
 
     <!-- Modals -->
-    <div id="modal-container" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div id="modal-container" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] hidden flex items-center justify-center p-4 overflow-y-auto pb-20">
         <!-- Content dynamic -->
     </div>
 
@@ -910,30 +918,30 @@
             const modal = document.getElementById('modal-container');
             
             modal.innerHTML = `
-                <div class="glass p-8 rounded-[40px] w-full max-w-2xl animate-in zoom-in-95 duration-200">
-                    <div class="flex justify-between items-start mb-8">
+                <div class="glass p-6 md:p-8 rounded-[40px] w-full max-w-2xl animate-in zoom-in-95 duration-200 my-auto">
+                    <div class="flex justify-between items-start mb-6 md:mb-8">
                         <div>
-                            <h3 class="font-outfit text-4xl text-white mb-2">${char.name}</h3>
-                            <div class="flex items-center gap-3">
-                                <div class="flex gap-2">
+                            <h3 class="font-outfit text-3xl md:text-4xl text-white mb-2">${char.name}</h3>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <div class="flex flex-wrap gap-2">
                                     ${char.markers.map(m => `<span class="px-3 py-1 bg-violet-500/20 text-violet-400 rounded-full text-xs font-bold">${m}</span>`).join('')}
                                 </div>
                             </div>
                         </div>
-                        <button onclick="closeModal()" class="w-12 h-12 glass rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        <button onclick="closeModal()" class="w-10 h-10 md:w-12 md:h-12 glass rounded-full flex items-center justify-center hover:bg-white/10 transition-colors shrink-0">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                         <div class="space-y-6">
                             <section>
                                 <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Conceito</h4>
-                                <p class="text-slate-200 leading-relaxed">${char.concept}</p>
+                                <p class="text-slate-200 leading-relaxed text-sm md:text-base">${char.concept}</p>
                             </section>
                             <section>
                                 <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Problema</h4>
-                                <p class="text-slate-200">${char.problem}</p>
+                                <p class="text-slate-200 text-sm md:text-base">${char.problem}</p>
                             </section>
                         </div>
                         
@@ -942,20 +950,20 @@
                             <div class="grid grid-cols-${Math.min(char.stressLimit || 4, 10)} gap-2">
                                 ${Array(char.stressLimit || 4).fill(0).map((_, i) => `<div class="h-3 rounded-full ${i < (char.stress || 0) ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'bg-white/10'}"></div>`).join('')}
                             </div>
-                            <p class="text-slate-400 text-xs mt-4">Se atingir ${char.stressLimit || 4} e sofrer mais um, você fica <span class="text-rose-400 font-bold italic">Vulnerável</span>.</p>
+                            <p class="text-slate-400 text-[10px] md:text-xs mt-4">Se atingir ${char.stressLimit || 4} e sofrer mais um, você fica <span class="text-rose-400 font-bold italic">Vulnerável</span>.</p>
                         </div>
                     </div>
 
-                    <div class="flex gap-4 pt-6 border-t border-white/5">
-                        <button onclick="setActiveHero(${index})" class="flex-1 py-4 ${isActive ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-violet-500 text-white'} rounded-2xl font-bold transition-all">
-                            ${isActive ? '✓ Herói Ativo' : 'Tornar Ativo'}
+                    <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 md:gap-4 pt-6 border-t border-white/5">
+                        <button onclick="setActiveHero(${index})" class="col-span-2 sm:flex-1 py-4 ${isActive ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-violet-500 text-white'} rounded-2xl font-bold transition-all text-sm">
+                            ${isActive ? '✓ Ativo' : 'Tornar Ativo'}
                         </button>
-                        <button onclick="printCharacterSheet(${index})" class="px-6 py-4 glass rounded-2xl text-slate-300 font-bold hover:text-white transition-all flex items-center gap-2">
+                        <button onclick="printCharacterSheet(${index})" class="px-4 py-4 glass rounded-2xl text-slate-300 font-bold hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                              Imprimir
                         </button>
-                        <button onclick="exportCharacterJSON(${index})" class="px-6 py-4 glass rounded-2xl text-violet-400 font-bold hover:bg-violet-500/10 transition-all">Exportar</button>
-                        <button onclick="openCharacterEditor(${index})" class="px-6 py-4 glass rounded-2xl text-white font-bold">Editar</button>
+                        <button onclick="exportCharacterJSON(${index})" class="px-4 py-4 glass rounded-2xl text-violet-400 font-bold hover:bg-violet-500/10 transition-all text-sm">JSON</button>
+                        <button onclick="openCharacterEditor(${index})" class="px-4 py-4 glass rounded-2xl text-white font-bold text-sm">Editar</button>
                     </div>
                 </div>
             `;
