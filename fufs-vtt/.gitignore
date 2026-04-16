@@ -1,8 +1,13 @@
+# Segurança
+.security/
+
 # Foundry VTT
 .security/
+config.js
 .exemplos/
 .agents/
 .claude/
+.qwen/
 .compendium/
 skills/
 skills-lock.json
