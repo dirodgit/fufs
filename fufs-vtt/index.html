@@ -177,7 +177,7 @@
             <!-- Dashboard Content -->
             <div id="tab-dashboard" class="tab-content flex-1">
                 <header class="mb-10">
-                    <h2 class="font-outfit text-4xl text-white mb-2">Bem-vindo, Viajante</h2>
+                    <h2 id="dashboard-greeting" class="font-outfit text-4xl text-white mb-2">Bem-vindo, Viajante</h2>
                     <p class="text-slate-400 italic">Por Diogo Rodrigues "Verskáld"</p>
                 </header>
 
@@ -426,7 +426,8 @@
             activeCharacter: null,
             tempAvatar: null,
             player: {
-                name: localStorage.getItem('fufs_player_name') || 'Viajante'
+                name: localStorage.getItem('fufs_player_name') || 'Viajante',
+                gender: localStorage.getItem('fufs_player_gender') || 'masculino'
             },
             combat: {
                 active: false,
@@ -1469,7 +1470,14 @@
                     <div class="space-y-6">
                         <div>
                             <label class="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-2 block">Seu Nome de Jogador</label>
-                            <input id="set-player-name" type="text" placeholder="Seu nome" value="${state.player.name}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-violet-500 focus:outline-none transition-all">
+                            <input id="set-player-name" type="text" placeholder="Seu nome" value="${state.player.name}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-violet-500 focus:outline-none transition-all mb-4">
+                            
+                            <label class="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-2 block">Gênero de Tratamento</label>
+                            <select id="set-player-gender" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-violet-500 focus:outline-none transition-all">
+                                <option value="masculino" ${state.player.gender === 'masculino' ? 'selected' : ''} class="bg-slate-900">Masculino (Bem-vindo)</option>
+                                <option value="feminino" ${state.player.gender === 'feminino' ? 'selected' : ''} class="bg-slate-900">Feminino (Bem-vinda)</option>
+                                <option value="nao-binario" ${state.player.gender === 'nao-binario' ? 'selected' : ''} class="bg-slate-900">Não-Binário (Bem-vinde)</option>
+                            </select>
                         </div>
 
                         <div class="flex gap-4 pt-4">
@@ -1484,12 +1492,18 @@
 
         function saveSettings() {
             const name = document.getElementById('set-player-name').value.trim();
+            const gender = document.getElementById('set-player-gender').value;
+            
             if (name) {
                 state.player.name = name;
+                state.player.gender = gender;
                 localStorage.setItem('fufs_player_name', name);
+                localStorage.setItem('fufs_player_gender', gender);
+                
+                updateGreeting();
+                closeModal();
+                showStatus('Configurações salvas!', 'success');
             }
-            closeModal();
-            showStatus('Configurações salvas!', 'success');
         }
 
         // Sharing Logic
@@ -1779,7 +1793,7 @@
             renderCombatActors();
             renderMessages();
             loadCompendiumNav(); 
-            
+            updateGreeting();
             // Inicia notas
             const notesArea = document.getElementById('adventure-notes');
             if (notesArea) notesArea.value = state.notes || '';
