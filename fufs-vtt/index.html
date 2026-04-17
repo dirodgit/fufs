@@ -1502,8 +1502,19 @@
                 
                 updateGreeting();
                 closeModal();
-                showStatus('Configurações salvas!', 'success');
+                showStatus('Ajustes salvos!', 'success');
             }
+        }
+
+        function updateGreeting() {
+            const greetingEl = document.getElementById('dashboard-greeting');
+            if (!greetingEl) return;
+            
+            let word = "Bem-vindo";
+            if (state.player.gender === 'feminino') word = "Bem-vinda";
+            if (state.player.gender === 'nao-binario') word = "Bem-vinde";
+            
+            greetingEl.textContent = `${word}, ${state.player.name}`;
         }
 
         // Sharing Logic
