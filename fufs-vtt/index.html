@@ -803,7 +803,7 @@
                             <div>
                                 <h4 class="font-outfit text-white">${char.name}</h4>
                                 <div class="flex gap-1 mt-1">
-                                    ${Array(char.stressLimit || 4).fill(0).map((_, i) => `<div class="w-2.5 h-1.5 rounded-full ${i < char.stress ? 'bg-rose-500' : 'bg-white/10'}"></div>`).join('')}
+                                    ${Array(char.stressLimit || 4).fill(0).map((_, i) => `<button onclick="tickPlayerStress(${p.charIndex}, ${i})" class="w-6 h-3 rounded-full transition-all ${i < (char.stress || 0) ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.3)]' : 'bg-white/10 hover:bg-white/20'}"></button>`).join('')}
                                 </div>
                             </div>
                         </div>
@@ -845,6 +845,18 @@
             renderCombatActors();
             renderCharacterList();
             localStorage.setItem('fufs_combat', JSON.stringify(state.combat));
+        }
+
+        function tickPlayerStress(index, level, fromModal = false) {
+            const char = state.characters[index];
+            if (!char) return;
+            const newStress = level + 1;
+            char.stress = (char.stress === newStress) ? level : newStress;
+            localStorage.setItem('fufs_chars', JSON.stringify(state.characters));
+            
+            renderCombatActors();
+            renderCharacterList();
+            if (fromModal) viewCharacterSheet(index);
         }
 
         function openEnemyCreator() {
@@ -966,7 +978,11 @@
                         <div class="glass p-6 rounded-3xl">
                             <label class="text-[10px] font-bold text-rose-500 uppercase tracking-widest block mb-4">Estresse</label>
                             <div class="grid grid-cols-${Math.min(char.stressLimit || 4, 10)} gap-2">
-                                ${Array(char.stressLimit || 4).fill(0).map((_, i) => `<div class="h-3 rounded-full ${i < (char.stress || 0) ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'bg-white/10'}"></div>`).join('')}
+                                ${Array(char.stressLimit || 4).fill(0).map((_, i) => `
+                                    <button onclick="tickPlayerStress(${index}, ${i}, true)" 
+                                            class="h-4 rounded-full transition-all ${i < (char.stress || 0) ? 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.5)]' : 'bg-white/10 hover:bg-white/20'}">
+                                    </button>
+                                `).join('')}
                             </div>
                             <p class="text-slate-400 text-[10px] md:text-xs mt-4">Se atingir ${char.stressLimit || 4} e sofrer mais um, você fica <span class="text-rose-400 font-bold italic">Vulnerável</span>.</p>
                         </div>
