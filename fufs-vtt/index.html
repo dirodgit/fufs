@@ -221,7 +221,7 @@
                             oninput="saveNotes(this.value)"
                             placeholder="Anote pistas, nomes e eventos importantes da sua aventura aqui..."
                             class="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-slate-300 text-sm focus:border-violet-500 focus:outline-none transition-all resize-none whitespace-pre-wrap"
-                        >${state.notes}</textarea>
+                        ></textarea>
                     </div>
                 </div>
             </div>
@@ -1780,6 +1780,10 @@
             renderMessages();
             loadCompendiumNav(); 
             
+            // Inicia notas
+            const notesArea = document.getElementById('adventure-notes');
+            if (notesArea) notesArea.value = state.notes || '';
+
             // Inicia no dashboard
             switchTab('dashboard');
         }
