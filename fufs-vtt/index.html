@@ -206,7 +206,15 @@
                     <div class="glass p-6 rounded-3xl flex flex-col h-full min-h-[300px]">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="font-outfit text-xl text-white">Bloco de Notas</h3>
-                            <span id="save-indicator" class="text-[9px] text-slate-500 uppercase tracking-widest opacity-0 transition-opacity">Salvo</span>
+                            <div class="flex items-center gap-2">
+                                <span id="save-indicator" class="text-[9px] text-slate-500 uppercase tracking-widest opacity-0 transition-opacity mr-2">Salvo</span>
+                                <button onclick="exportAdventureNotes()" title="Exportar Notas" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all">
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                </button>
+                                <button onclick="importAdventureNotes()" title="Importar Notas" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all">
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                </button>
+                            </div>
                         </div>
                         <textarea 
                             id="adventure-notes" 
@@ -1495,6 +1503,39 @@
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
             showStatus('JSON gerado para download!', 'success');
+        }
+
+        function exportAdventureNotes() {
+            const blob = new Blob([state.notes], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fufs-notas-aventura-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            showStatus('Notas exportadas!', 'success');
+        }
+
+        function importAdventureNotes() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.txt,.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = readerEvent => {
+                    const content = readerEvent.target.result;
+                    state.notes = content;
+                    localStorage.setItem('fufs_notes', content);
+                    const textarea = document.getElementById('adventure-notes');
+                    if (textarea) textarea.value = content;
+                    showStatus('Notas importadas!', 'success');
+                };
+                reader.readAsText(file);
+            };
+            input.click();
         }
 
         function openImportModal() {
