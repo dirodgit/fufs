@@ -202,26 +202,18 @@
                     </div>
 
                     <!-- Hero Journey Status -->
-                    <div class="glass p-6 rounded-3xl">
-                        <h3 class="font-outfit text-xl text-white mb-6">Jornada do Herói</h3>
-                        <div class="space-y-4">
-                            <div class="journey-step glass p-3 rounded-xl flex items-center gap-3">
-                                <div class="w-6 h-6 rounded-full border-2 border-violet-500/50 flex items-center justify-center text-[10px] text-violet-400 font-bold">1</div>
-                                <span class="text-sm text-slate-300">Mundo Comum</span>
-                            </div>
-                             <div class="journey-step glass p-3 rounded-xl flex items-center gap-3 opacity-50">
-                                <div class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center text-[10px] text-white/20 font-bold">2</div>
-                                <span class="text-sm text-slate-400">Chamado à Aventura</span>
-                            </div>
-                             <div class="journey-step glass p-3 rounded-xl flex items-center gap-3 opacity-50">
-                                <div class="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center text-[10px] text-white/20 font-bold">3</div>
-                                <span class="text-sm text-slate-400">Recusa do Chamado</span>
-                            </div>
-                            <!-- More steps... -->
-                            <div class="pt-4 mt-4 border-t border-white/5">
-                                <button class="w-full py-2 text-violet-400 hover:text-white text-xs font-semibold tracking-wider uppercase transition-colors">Ver Jornada Completa</button>
-                            </div>
+                    <!-- Adventure Notepad -->
+                    <div class="glass p-6 rounded-3xl flex flex-col h-full min-h-[300px]">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-outfit text-xl text-white">Bloco de Notas</h3>
+                            <span id="save-indicator" class="text-[9px] text-slate-500 uppercase tracking-widest opacity-0 transition-opacity">Salvo</span>
                         </div>
+                        <textarea 
+                            id="adventure-notes" 
+                            oninput="saveNotes(this.value)"
+                            placeholder="Anote pistas, nomes e eventos importantes da sua aventura aqui..."
+                            class="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-slate-300 text-sm focus:border-violet-500 focus:outline-none transition-all resize-none whitespace-pre-wrap"
+                        >${state.notes}</textarea>
                     </div>
                 </div>
             </div>
@@ -433,9 +425,20 @@
                 participants: [],
                 currentActor: null,
             },
-            journeyIndex: parseInt(localStorage.getItem('fufs_journey') || '0'),
+            notes: localStorage.getItem('fufs_notes') || '',
             messages: JSON.parse(localStorage.getItem('fufs_messages') || '[]')
         };
+
+        function saveNotes(val) {
+            state.notes = val;
+            localStorage.setItem('fufs_notes', val);
+            
+            // Subtle save indicator
+            const indicator = document.getElementById('save-indicator');
+            indicator.style.opacity = '1';
+            clearTimeout(indicator.timer);
+            indicator.timer = setTimeout(() => indicator.style.opacity = '0', 2000);
+        }
 
         // Utility: Save and Status
         function saveCharacters() {
